@@ -4,10 +4,11 @@ import Navbar from "@/components/Navbar";
 import VideoPlayer from "@/components/VideoPlayer";
 import { notFound } from "next/navigation";
 import EnrollButton from "@/components/EnrollButton";
-import { Lock, CirclePlay, Play } from "lucide-react";
+import { Lock, CirclePlay } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import Image from "next/image";
 
 export default async function CourseDetailPage({
   params,
@@ -93,9 +94,11 @@ export default async function CourseDetailPage({
                   // Course Overview / Thumbnail
                   <>
                     {course.thumbnailUrl ? (
-                      <img
+                      <Image
                         src={course.thumbnailUrl}
-                        className="w-full h-full object-cover opacity-50 absolute inset-0"
+                        alt={course.title}
+                        fill
+                        className="object-cover opacity-50"
                       />
                     ) : null}
                     <div className="relative z-10 p-8 max-w-lg bg-black/60 rounded backdrop-blur-sm">

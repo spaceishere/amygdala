@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+
 
 interface VideoPlayerProps {
   videoUrl: string | null;
@@ -13,7 +13,7 @@ export default function VideoPlayer({
   thumbnail,
   title,
 }: VideoPlayerProps) {
-  const [isLoading, setIsLoading] = useState(true);
+
 
   if (!videoUrl) {
     return (
@@ -35,8 +35,6 @@ export default function VideoPlayer({
           controls
           poster={thumbnail || undefined}
           className="w-full h-full"
-          onLoadedData={() => setIsLoading(false)}
-          onCanPlay={() => setIsLoading(false)}
         >
           <source src={videoUrl} type="video/mp4" />
           <source src={videoUrl} type="video/webm" />

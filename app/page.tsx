@@ -1,6 +1,7 @@
 import { db } from "@/lib/db"
 import Navbar from "@/components/Navbar"
 import Link from "next/link"
+import Image from "next/image"
 import {
   Card,
   CardContent,
@@ -42,11 +43,14 @@ export default async function HomePage() {
                 return (
                     <Card key={course.id} className="flex flex-col overflow-hidden hover:shadow-lg transition-shadow">
                         {course.thumbnailUrl && (
-                            <img 
-                              src={course.thumbnailUrl} 
-                              alt={course.title} 
-                              className="h-48 w-full object-cover"
-                            />
+                            <div className="relative h-48 w-full">
+                                <Image 
+                                  src={course.thumbnailUrl} 
+                                  alt={course.title}
+                                  fill
+                                  className="object-cover"
+                                />
+                            </div>
                         )}
                         <CardHeader>
                             <CardTitle className="line-clamp-1">{course.title}</CardTitle>
