@@ -74,7 +74,7 @@ export default async function CourseDetailPage({
                 title={activeEpisode.title}
               />
             ) : (
-              <div className="bg-slate-900 aspect-video rounded-lg flex flex-col items-center justify-center text-white p-6 text-center">
+              <div className="relative bg-slate-900 aspect-video rounded-lg flex flex-col items-center justify-center text-white p-6 text-center overflow-hidden">
                 {activeEpisode ? (
                   <>
                     <Lock className="h-12 w-12 mb-4 text-slate-400" />

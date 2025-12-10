@@ -1,39 +1,44 @@
-import { NextRequest, NextResponse } from "next/server"
-import { writeFile, mkdir } from "fs/promises"
-import path from "path"
-import { v4 as uuidv4 } from "uuid"
+import { NextRequest, NextResponse } from "next/server";
+import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export async function POST(req: NextRequest) {
   try {
-    const formData = await req.formData()
-    const file = formData.get("file") as File
+    const formData = await req.formData();
+    const file = formData.get("file") as File | null;
 
     if (!file) {
-      return NextResponse.json({ error: "No file uploaded" }, { status: 400 })
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
 
-    // Create uploads directory if it doesn't exist
-    const uploadDir = path.join(process.cwd(), "public", "uploads")
-    await mkdir(uploadDir, { recursive: true })
+    const uploadResult = await new Promise<UploadApiResponse>(
+      (resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: process.env.CLOUDINARY_FOLDER || "lms-uploads",
+            resource_type: "auto",
+          },
+          (error, result) => {
+            if (error || !result) return reject(error);
+            resolve(result);
+          }
+        );
 
-    // Generate unique filename
-    const originalName = file.name
-    const ext = path.extname(originalName)
-    const fileName = `${uuidv4()}${ext}`
-    const filePath = path.join(uploadDir, fileName)
+        stream.end(buffer);
+      }
+    );
 
-    await writeFile(filePath, buffer)
-
-    // Return the URL
-    // In dev, localhost:3000/uploads/filename
-    const fileUrl = `/uploads/${fileName}`
-
-    return NextResponse.json({ url: fileUrl })
+    return NextResponse.json({ url: uploadResult.secure_url });
   } catch (error) {
-    console.error("Upload error:", error)
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 })
+    console.error("Upload error:", error);
+    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }
